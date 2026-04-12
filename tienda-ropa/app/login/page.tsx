@@ -14,11 +14,19 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
 
+    // Validación en cliente
+    if (!password || password.length < 6) {
+      setError('Contraseña inválida')
+      setLoading(false)
+      return
+    }
+
     try {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password }),
+        credentials: 'include', // 🔐 IMPORTANTE: Incluir cookies en la solicitud
       })
 
       const data = await response.json()
@@ -29,7 +37,9 @@ export default function LoginPage() {
         return
       }
 
-      router.push('/admin/agregar')
+      // Esperar a que se guarde la cookie antes de redirigir
+      await new Promise(resolve => setTimeout(resolve, 500))
+      router.push('/admin/dashboard')
     } catch (err) {
       setError('Error al conectar con el servidor')
       setLoading(false)

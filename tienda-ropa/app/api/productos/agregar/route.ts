@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { validateAdminToken } from '@/app/api/auth/validate'
 
 export async function POST(request: NextRequest) {
+  // 🔐 Validar autenticación
+  const { isValid, error } = validateAdminToken(request)
+  if (!isValid) return error
+
   try {
     const formData = await request.formData()
     const nombre = formData.get('nombre') as string
