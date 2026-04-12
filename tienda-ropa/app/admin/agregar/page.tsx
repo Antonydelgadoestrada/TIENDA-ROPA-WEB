@@ -220,7 +220,7 @@ export default function AgregarProducto() {
                 {/* Precio */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Precio (COP) *
+                    Precio (S/.) *
                   </label>
                   <input
                     type="number"

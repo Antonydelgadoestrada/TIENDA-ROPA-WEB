@@ -48,9 +48,12 @@ export default function Home() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
-            <button className="px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-lg hover:shadow-2xl transition-all transform hover:scale-105">
+            <a
+              href="/catalogo"
+              className="px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-lg hover:shadow-2xl transition-all transform hover:scale-105 text-center"
+            >
               Explorar Catálogo
-            </button>
+            </a>
             <button className="px-8 py-4 border-2 border-gray-600 text-white font-semibold rounded-lg hover:border-gray-400 transition-all">
               Más Información
             </button>
