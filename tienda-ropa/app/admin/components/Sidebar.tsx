@@ -41,8 +41,8 @@ export default function Sidebar() {
     {
       title: 'Productos',
       path: '/admin/productos',
-      icon: '🛍️',
-      description: 'Gestión de productos'
+      icon: '�',
+      description: 'Gestión de catálogo'
     },
     {
       title: 'Inventario',

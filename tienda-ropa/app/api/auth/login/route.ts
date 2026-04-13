@@ -1,27 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 
-// Generar token único basado en la contraseña + timestamp
+// Generar token consistente basado en la contraseña
 function generateToken(password: string): string {
-  const timestamp = Date.now().toString()
+  const secret = process.env.TOKEN_SECRET || 'admin-secret-key'
   const hash = crypto
     .createHash('sha256')
-    .update(password + timestamp + process.env.TOKEN_SECRET || 'secret')
+    .update(password + secret)
     .digest('hex')
   return hash
-}
-
-// Validar token (solo token válido = contraseña correcta + TOKEN_SECRET)
-function validateToken(token: string, password: string): boolean {
-  // El token debe ser válido (generado con generateToken)
-  try {
-    // En producción, debería comparar contra una base de datos de tokens
-    // Por ahora, re-generamos un hash usando la contraseña
-    const isValid = token.length === 64 && /^[a-f0-9]{64}$/.test(token)
-    return isValid
-  } catch {
-    return false
-  }
 }
 
 export async function POST(request: NextRequest) {
@@ -46,16 +33,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generar token único para esta sesión
+    // Generar token consistente para esta sesión
     const token = generateToken(password)
+
+    console.log('[AUTH] Login exitoso, token:', token.substring(0, 8) + '...')
 
     const response = NextResponse.json({ success: true })
     response.cookies.set('admin-token', token, {
       httpOnly: true,
-      secure: true, // Siempre true, incluso en desarrollo
-      sameSite: 'strict', // Más restrictivo
+      secure: process.env.NODE_ENV === 'production', // false en desarrollo
+      sameSite: 'lax', // menos restrictivo
       maxAge: 60 * 60 * 24 * 7, // 7 días
-      path: '/', // Solo para rutas específicas
+      path: '/',
     })
 
     return response

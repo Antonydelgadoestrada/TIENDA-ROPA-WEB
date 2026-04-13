@@ -7,28 +7,20 @@ export function middleware(request: NextRequest) {
   if (pathname.startsWith('/admin')) {
     const token = request.cookies.get('admin-token')?.value
 
-    // Validaciones estrictas
     if (!token) {
-      console.warn(`[SECURITY] Intento de acceso sin token a ${pathname}`)
+      console.log(`[AUTH] Sin token en ${pathname}, redirigiendo a login`)
       return NextResponse.redirect(new URL('/login', request.url))
     }
 
-    // Validar formato del token (debe ser hash SHA256)
+    // Validar formato del token (debe ser hash SHA256: 64 caracteres hex)
     if (!/^[a-f0-9]{64}$/.test(token)) {
-      console.warn(`[SECURITY] Token inválido detectado en ${pathname}: ${token}`)
+      console.log(`[AUTH] Token con formato inválido en ${pathname}`)
       const response = NextResponse.redirect(new URL('/login', request.url))
-      // Limpiar cookie inválida
       response.cookies.delete('admin-token')
       return response
     }
 
-    // Verificar que la cookie no sea modificada por el cliente
-    // (httpOnly previene esto, pero como medida adicional validamos)
-    const cookieHeaders = request.headers.get('cookie')
-    if (!cookieHeaders?.includes('admin-token')) {
-      console.warn(`[SECURITY] Cookie no encontrada en headers para ${pathname}`)
-      return NextResponse.redirect(new URL('/login', request.url))
-    }
+    console.log(`[AUTH] Token válido, acceso permitido a ${pathname}`)
   }
 
   return NextResponse.next()
