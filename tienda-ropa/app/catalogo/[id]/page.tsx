@@ -60,7 +60,7 @@ export default function ProductoDetalle() {
           .eq('producto_id', productoId)
 
         if (!tallasError && tallasData) {
-          setTallas(tallasData)
+          setTallas(tallasData as unknown as ProductoTalla[])
           if (tallasData.length > 0) {
             setTallaSeleccionada(tallasData[0].talla_id)
           }

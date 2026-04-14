@@ -5,7 +5,7 @@ import { validateAdminToken } from '@/app/api/auth/validate'
 export async function POST(request: NextRequest) {
   // 🔐 Validar autenticación
   const { isValid, error } = validateAdminToken(request)
-  if (!isValid) return error
+  if (!isValid) return error!
 
   try {
     const formData = await request.formData()

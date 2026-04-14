@@ -16,7 +16,7 @@ import { validateAdminToken } from '@/app/api/auth/validate'
 export async function POST(request: NextRequest) {
   // 🔐 Validar autenticación
   const { isValid, error } = validateAdminToken(request)
-  if (!isValid) return error
+  if (!isValid) return error!
 
   try {
     const {
@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   // 🔐 Validar autenticación
   const { isValid, error } = validateAdminToken(request)
-  if (!isValid) return error
+  if (!isValid) return error!
 
   try {
     const { searchParams } = new URL(request.url)

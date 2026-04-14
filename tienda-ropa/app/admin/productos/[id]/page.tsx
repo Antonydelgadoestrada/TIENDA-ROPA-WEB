@@ -120,7 +120,7 @@ export default function EditarProductoPage() {
         .eq('producto_id', productoId)
 
       if (tallasError) throw tallasError
-      setTallasStock(tallasData || [])
+      setTallasStock((tallasData as unknown as ProductoTalla[]) || [])
     } catch (err) {
       console.error('Error:', err)
       setAlert({ type: 'error', message: 'Error al cargar producto' })

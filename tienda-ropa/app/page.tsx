@@ -1,147 +1,167 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { createClient } from '@supabase/supabase-js'
+import Link from 'next/link'
+import HeaderPremium from '@/app/components/HeaderPremium'
+import FooterPremium from '@/app/components/FooterPremium'
+
+interface Configuracion {
+  nombre_tienda: string
+  descripcion: string
+  email?: string
+  telefono?: string
+  instagram?: string
+  facebook?: string
+  tiktok?: string
+  whatsapp?: string
+}
+
+interface Producto {
+  id: string
+  nombre: string
+  precio: number
+  descuento: number
+  imagen_url: string
+  descripcion: string
+}
+
 export default function Home() {
+  const [config, setConfig] = useState<Configuracion | null>(null)
+  const [productos, setProductos] = useState<Producto[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Obtener configuración
+        const { data: configData } = await supabase
+          .from('tienda_configuracion')
+          .select('*')
+          .single()
+
+        if (configData) setConfig(configData)
+
+        // Obtener productos activos
+        const { data: productosData } = await supabase
+          .from('productos')
+          .select('*')
+          .eq('activo', true)
+          .limit(6)
+
+        if (productosData) setProductos(productosData)
+      } catch (error) {
+        console.error('Error:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black flex flex-col">
-      {/* Navigation */}
-      <nav className="bg-black/40 backdrop-blur-md border-b border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-8">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
-                Tienda Ropa
-              </h1>
-              <div className="hidden md:flex gap-6">
-                <a href="#" className="text-gray-400 hover:text-white transition">
-                  Productos
-                </a>
-                <a href="#" className="text-gray-400 hover:text-white transition">
-                  Categorías
-                </a>
-                <a href="#" className="text-gray-400 hover:text-white transition">
-                  Contacto
-                </a>
-              </div>
-            </div>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex flex-col">
+      {/* Header Premium con Login/Cuenta */}
+      <HeaderPremium />
+
+      {/* Hero Section */}
+      <section className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-20 px-4">
+        <div className="max-w-7xl mx-auto text-center space-y-6">
+          <h2 className="text-5xl font-bold">{config?.nombre_tienda || 'Tienda Ropa'}</h2>
+          <p className="text-xl text-blue-100">{config?.descripcion || 'Tienda de ropa online'}</p>
+          <Link
+            href="/productos"
+            className="inline-block px-8 py-3 bg-white text-blue-600 font-bold rounded-lg hover:bg-blue-50 transition"
+          >
+            Ver Catálogo →
+          </Link>
         </div>
-      </nav>
+      </section>
 
-      {/* Hero */}
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-20">
-        <div className="max-w-3xl text-center space-y-8">
-          {/* Title */}
-          <div className="space-y-4">
-            <div className="inline-block px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full">
-              <span className="text-emerald-400 text-sm font-semibold">
-                ✨ Bienvenido a Tienda Ropa
-              </span>
-            </div>
+      {/* Productos Destacados */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex-1">
+        <h3 className="text-4xl font-bold text-slate-900 mb-12 text-center">✨ Productos Destacados</h3>
 
-            <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight">
-              Moda de Calidad para Todos
-            </h1>
-
-            <p className="text-xl md:text-2xl text-gray-400 max-w-2xl mx-auto">
-              Descubre nuestra colección exclusiva de prendas elegantes y cómodas.
-              Cada pieza seleccionada con dedicación.
-            </p>
-          </div>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
-            <a
-              href="/catalogo"
-              className="px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-lg hover:shadow-2xl transition-all transform hover:scale-105 text-center"
-            >
-              Explorar Catálogo
-            </a>
-            <button className="px-8 py-4 border-2 border-gray-600 text-white font-semibold rounded-lg hover:border-gray-400 transition-all">
-              Más Información
-            </button>
-          </div>
-
-          {/* Features */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-16">
-            {[
-              {
-                icon: '🎨',
-                title: 'Diseño Elegante',
-                desc: 'Prendas seleccionadas con buen gusto y estilo',
-              },
-              {
-                icon: '✅',
-                title: 'Calidad Premium',
-                desc: 'Materiales de primera calidad y acabados perfectos',
-              },
-              {
-                icon: '🚚',
-                title: 'Envío Rápido',
-                desc: 'Entrega segura y en el menor tiempo posible',
-              },
-            ].map((feature, i) => (
-              <div
-                key={i}
-                className="p-6 bg-gray-800/40 backdrop-blur border border-gray-700 rounded-xl hover:border-emerald-500/50 transition"
-              >
-                <div className="text-3xl mb-3">{feature.icon}</div>
-                <h3 className="text-white font-semibold mb-2">{feature.title}</h3>
-                <p className="text-gray-400 text-sm">{feature.desc}</p>
-              </div>
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <div key={i} className="bg-white rounded-lg shadow animate-pulse h-80"></div>
             ))}
           </div>
-        </div>
-      </main>
+        ) : productos.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {productos.map(producto => {
+              const precioFinal = producto.precio * (1 - producto.descuento / 100)
+              return (
+                <Link key={producto.id} href={`/productos/${producto.id}`}>
+                  <div className="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden group cursor-pointer">
+                    {/* Imagen */}
+                    <div className="relative h-64 bg-slate-200 overflow-hidden">
+                      {producto.imagen_url ? (
+                        <img
+                          src={producto.imagen_url}
+                          alt={producto.nombre}
+                          className="w-full h-full object-cover group-hover:scale-110 transition duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-4xl">👕</div>
+                      )}
+                      {producto.descuento > 0 && (
+                        <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                          -{producto.descuento}%
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Contenido */}
+                    <div className="p-4 space-y-3">
+                      <h4 className="font-bold text-slate-900 line-clamp-2">{producto.nombre}</h4>
+                      <p className="text-sm text-slate-600 line-clamp-2">{producto.descripcion}</p>
+
+                      {/* Precio */}
+                      <div className="flex gap-2 items-center">
+                        {producto.descuento > 0 ? (
+                          <>
+                            <span className="text-xl font-bold text-blue-600">
+                              S/. {precioFinal.toFixed(2)}
+                            </span>
+                            <span className="text-sm text-slate-500 line-through">
+                              S/. {producto.precio.toFixed(2)}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-xl font-bold text-blue-600">
+                            S/. {producto.precio.toFixed(2)}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Botón */}
+                      <button className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition">
+                        Ver Detalles →
+                      </button>
+                    </div>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-slate-600 text-lg">No hay productos disponibles</p>
+          </div>
+        )}
+      </section>
 
       {/* Footer */}
-      <footer className="bg-black/60 backdrop-blur border-t border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-            {[
-              {
-                title: 'Empresa',
-                links: ['Nosotros', 'Blog', 'Prensa'],
-              },
-              {
-                title: 'Producción',
-                links: ['Catálogo', 'Envíos', 'Cambios'],
-              },
-              {
-                title: 'Legal',
-                links: ['Privacidad', 'Términos', 'Cookies'],
-              },
-              {
-                title: 'Social',
-                links: ['Instagram', 'Facebook', 'Twitter'],
-              },
-            ].map((col, i) => (
-              <div key={i}>
-                <h4 className="text-white font-semibold mb-4">{col.title}</h4>
-                <ul className="space-y-2">
-                  {col.links.map((link, j) => (
-                    <li key={j}>
-                      <a href="#" className="text-gray-400 hover:text-white transition text-sm">
-                        {link}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-
-          <div className="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm">
-              © 2024 Tienda Ropa. Todos los derechos reservados.
-            </p>
-            <div className="flex gap-6 mt-4 md:mt-0">
-              {['📧 Email', '📱 Teléfono', '📍 Ubicación'].map((contact, i) => (
-                <span key={i} className="text-gray-400 text-sm">
-                  {contact}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </footer>
+      {/* Footer Premium */}
+      <FooterPremium />
     </div>
   )
 }

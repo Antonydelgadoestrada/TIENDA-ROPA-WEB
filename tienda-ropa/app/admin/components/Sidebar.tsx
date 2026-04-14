@@ -34,7 +34,7 @@ export default function Sidebar() {
   const menuItems = [
     {
       title: 'Dashboard',
-      path: '/admin/dashboard',
+      path: '/admin',
       icon: '📊',
       description: 'Inicio y KPIs'
     },
@@ -45,22 +45,28 @@ export default function Sidebar() {
       description: 'Gestión de catálogo'
     },
     {
-      title: 'Inventario',
-      path: '/admin/inventario',
-      icon: '📦',
-      description: 'Entrada/Salida/Historial'
-    },
-    {
       title: 'Pedidos',
       path: '/admin/pedidos',
       icon: '📋',
       description: 'Gestión de órdenes'
     },
     {
-      title: 'Reportes',
-      path: '/admin/reportes',
-      icon: '📈',
-      description: 'Analytics'
+      title: 'Clientes',
+      path: '/admin/clientes',
+      icon: '👥',
+      description: 'Base de clientes'
+    },
+    {
+      title: 'Cupones',
+      path: '/admin/cupones',
+      icon: '🎟️',
+      description: 'Descuentos y códigos'
+    },
+    {
+      title: 'Configuración',
+      path: '/admin/configuracion',
+      icon: '⚙️',
+      description: 'Ajustes de tienda'
     },
   ]
 

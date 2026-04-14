@@ -66,7 +66,7 @@ export default function ProductosPage() {
           .eq('producto_id', prod.id)
 
         if (tallasData) {
-          productosConStock[prod.id] = tallasData.reduce((sum: number, t: ProductoTalla) => sum + t.stock, 0)
+          productosConStock[prod.id] = tallasData.reduce((sum: number, t: any) => sum + (t.stock || 0), 0)
         }
       }
 

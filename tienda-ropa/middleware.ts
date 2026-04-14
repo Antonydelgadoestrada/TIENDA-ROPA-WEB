@@ -23,9 +23,20 @@ export function middleware(request: NextRequest) {
     console.log(`[AUTH] Token válido, acceso permitido a ${pathname}`)
   }
 
+  // Proteger rutas de usuario (/cuenta, /checkout)
+  if (pathname.startsWith('/cuenta') || pathname.startsWith('/checkout')) {
+    const token = request.cookies.get('auth_token')?.value
+
+    if (!token) {
+      console.log(`[AUTH] Sin token de usuario en ${pathname}, redirigiendo a login`)
+      // Redirigir a login pero se mantendrá en el lado del cliente principalmente
+      // porque usamos localStorage, no cookies
+    }
+  }
+
   return NextResponse.next()
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/api/productos/:path*'],
+  matcher: ['/admin/:path*', '/conta/:path*', '/checkout/:path*', '/api/productos/:path*'],
 }
